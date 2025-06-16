@@ -1,0 +1,31 @@
+file                        = { SOI ~ (NEWLINE* ~ statement ~ NEWLINE*)* ~ EOI}
+
+t                           = { "t" }
+nil                         = { "nil" }
+double_quoted_string        = _{ "\"" ~ string ~ "\"" }
+unsigned                    = @{ ("0" | '1'..'9' ~ '0'..'9' * ) }
+integer                     = @{ "-" ? ~ unsigned }
+float                       = @{ "-" ? ~ unsigned ~ "." ~ unsigned? }
+string                      = { (!("\"") ~ ANY)* }
+
+double_quote                = @{ "\"" }
+open_paren                  = @{ "(" }
+quote                       = @{ "'" }
+backquote                   = @{ "`" }
+comma                       = @{ "," }
+close_paren                 = @{ ")" }
+
+nonsymbol                   = { open_paren | quote | backquote | comma | close_paren | double_quote | WHITESPACE }
+
+statement                   = { sexpr+ }
+
+value                       = { (t | nil | float | unsigned | integer | double_quoted_string) }
+symbol                      = @{ ((!(nonsymbol | integer) ~ ANY)+) }
+quoted_symbol               = ${ quote ~ symbol }
+
+defun                       = { open_paren ~ "defun" ~ symbol_sexpr ~ sexpr* }
+sexpr                       = { quote? ~ open_paren ~ (value | symbol | quoted_symbol | sexpr)* ~ close_paren }
+symbol_sexpr                = { open_paren ~ symbol* ~ close_paren }
+
+delimiter                   = _{ NEWLINE+ }
+WHITESPACE                  = _{ " " | "\t" | "\n" }

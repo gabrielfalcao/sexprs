@@ -1,0 +1,35 @@
+[package]
+name = "sexprs-repl"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+documentation.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+autoexamples = false
+autobenches = false
+autotests = false
+
+[package.metadata]
+cargo-args = ["-Zmtime-on-use", "-Zavoid-dev-deps", "-Zcustom_mir"]
+
+[dependencies]
+sexprs-util = {workspace = true}
+sexprs-vm = {workspace = true}
+sexprs-parser = {workspace = true}
+sexprs-formatter = {workspace = true}
+sexprs-data-structures = {workspace = true}
+rustyline = {workspace = true, features = ["with-file-history", "with-sqlite-history", "rustyline-derive"]}
+syntect = { workspace = true }
+iocore = { workspace = true }
+
+
+[[bin]]
+name = "sexprs"
+path = "src/main.rs"

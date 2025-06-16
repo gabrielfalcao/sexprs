@@ -1,0 +1,44 @@
+[package]
+name = "sexprs-decorators"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+documentation.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+autoexamples = false
+autobenches = false
+autotests = false
+
+[package.metadata]
+cargo-args = ["-Zmtime-on-use", "-Zavoid-dev-deps", "-Zcustom_mir"]
+
+[dependencies]
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true }
+
+sexprs-macros-core = { workspace = true }
+sexprs-formatter = { workspace = true }
+sexprs-util = { workspace = true}
+
+[lib]
+proc-macro = true
+doctest = false
+bench = false
+test = false
+
+[[test]]
+name = "test_error_type"
+path = "./tests/test_error_type.rs"
+
+
+
+[dev-dependencies]
+k9 = {workspace = true}

@@ -1,0 +1,75 @@
+[package]
+name = "sexprs-data-structures"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+documentation.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+autoexamples = false
+autobenches = false
+autotests = false
+
+[dependencies]
+sexprs-util = { workspace = true }
+unique-pointer = { workspace = true }
+
+[features]
+debug = []
+
+[dev-dependencies]
+k9 = { workspace = true }
+
+[package.metadata]
+cargo-args = ["-Zmtime-on-use", "-Zavoid-dev-deps", "-Zcustom_mir"]
+
+
+# [[test]]
+# name ="test_sexprs"
+# path ="tests/test_sexprs.rs"
+
+# # [[test]]
+# # name ="test_sexprs_repr"
+# # path ="tests/test_sexprs_repr.rs"
+
+[[test]]
+name ="test_cell_conversion"
+path ="tests/test_cell_conversion.rs"
+
+[[test]]
+name ="test_cell_methods"
+path ="tests/test_cell_methods.rs"
+
+[[test]]
+name ="test_cell_traits"
+path ="tests/test_cell_traits.rs"
+
+[[test]]
+name = "test_cell_iter"
+path = "tests/test_cell_iter.rs"
+
+[[test]]
+name ="test_cons"
+path ="tests/test_cons.rs"
+
+[[test]]
+name ="test_value"
+path ="tests/test_value.rs"
+
+[[test]]
+name = "test_value_repr"
+path = "tests/test_value_repr.rs"
+
+[[test]]
+name = "test_value_iter"
+path = "tests/test_value_iter.rs"
+
+[[test]]
+name ="test_value_conversion"
+path ="tests/test_value_conversion.rs"

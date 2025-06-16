@@ -1,0 +1,87 @@
+#######b. ###     ### .d####b.########################b     d##############
+###   Y##b###     ###d##P  Y##b   ###    ###       ####b   d####    ###
+###    ######     ###Y##b.        ###    ###       #####b.d#####    ###
+###   d##P###     ### "Y###b.     ###    #######   ###Y#####P###    ###
+#######P" ###     ###    "Y##b.   ###    ###       ### Y###P ###    ###
+### T##b  ###     ###      "###   ###    ###       ###  Y#P  ###    ###
+###  T##b Y##b. .d##PY##b  d##P   ###    ###       ###   "   ###    ###
+###   T##b "Y#####P"  "Y####P"    ###    ###       ###       ###    ###
+
+# ignore = []	                        # Skip formatting the specified files and directories
+# verbose = "Quiet"			# How much to information to emit to the user (Verbose, Normal, Quiet)
+array_width = 42		        # Maximum width of an array literal before falling back to vertical formatting.
+attr_fn_like_width = 20			# Maximum width of the args of a function-like attributes before falling back to vertical formatting.
+chain_width = 50                 	# Maximum length of a chain to fit on a single line.
+fn_call_width = 88                     # Maximum width of the args of a function call before falling back to vertical formatting.
+comment_width = 80			# Maximum length of comments. No effect unless wrap_comments = true
+doc_comment_code_block_width = 100	# Maximum width for code snippets in doc comments. No effect unless format_code_in_doc_comments = true
+inline_attribute_width = 0		# Write an item and its attribute on the same line if their combined width is below a threshold
+max_width = 88  			# Maximum width of each line
+short_array_element_width_threshold = 10# Width threshold for an array element to be considered short
+single_line_if_else_max_width = 20	# Maximum line length for single line if-else expressions. A value of zero means always break if-else expressions.
+single_line_let_else_max_width = 20	# Maximum line length for single line let-else statements. A value of zero means always format the divergent `else` block over multiple lines.
+struct_lit_width = 18			# Maximum width in the body of a struct lit before falling back to vertical formatting.
+struct_variant_width = 35		# Maximum width in the body of a struct variant before falling back to vertical formatting.
+error_on_line_overflow = false		# Error if unable to get all lines within max width
+error_on_unformatted = false		# Error if unable to get comments or string literals within max width, or they are left with trailing whitespaces
+binop_separator = "Front"		# Where to put a binary operator when a binary expression goes multiline
+blank_lines_lower_bound = 0		# Minimum number of blank lines which must be put between items
+blank_lines_upper_bound = 1		# Maximum number of blank lines which can be put between items
+brace_style = "SameLineWhere"		# Brace style for items
+color = "Auto"			        # What Color option to use when none is supplied = Always, Never, Auto
+combine_control_expr = true		# Combine control expressions with function calls
+condense_wildcard_suffixes = false	# Replace strings of _ wildcards by a single ..                              in tuple patterns
+control_brace_style = "AlwaysSameLine"	# Brace style for control flow constructs
+disable_all_formatting = false		# Don't reformat anything
+edition = "2021"			# The edition of the parser (RFC 2052)
+emit_mode = "Files"			# What emit Mode to use when none is supplied
+empty_item_single_line = true		# Put empty-body functions and impls on a single line
+enum_discrim_align_threshold = 0	# Align enum variants discrims, if their diffs fit within threshold
+fn_params_layout = "Tall"		# Control the layout of parameters in function signatures.
+fn_single_line = false			# Put single-expression functions on a single line
+force_explicit_abi = true		# Always print the abi for extern items
+force_multiline_blocks = false		# Force multiline closure bodies and match arms to be wrapped in a block
+format_code_in_doc_comments = false	# Format the code snippet in doc comments.
+format_generated_files = true		# Format generated files
+format_macro_bodies = true		# Format the bodies of declarative macro definitions
+format_macro_matchers = true		# Format the metavariable matching patterns in macros
+format_strings = false			# Format string literals where necessary
+group_imports = "StdExternalCrate"      # Controls the strategy for how imports are grouped together: Preserve, StdExternalCrate or One
+hard_tabs = false			# Use tab characters for indentation, spaces for alignment
+# tab_spaces = 2                        # Number of spaces per tab
+hex_literal_case = "Upper"		# Format hexadecimal integer literals
+show_parse_errors = true		#
+imports_granularity = "Module"		# Merge or split imports to the provided granularity
+                                        # imports_granularity options: "Preserve": "Do not merge imports" /"Crate": "Use one `use` statement per crate" / "Module": "Use one `use` statement per module" / "Item": " Use one `use` statement per imported item" / "One":  Use one `use` statement including all items)
+imports_indent = "Block"		# Indent of imports
+imports_layout = "Mixed"		# Item layout inside a import block
+indent_style = "Block"			# How do we indent expressions or items
+make_backup = false			# Backup changed files
+match_arm_blocks = false		# Wrap the body of arms in blocks when it does not fit on the same line with the pattern of arms
+match_arm_leading_pipes = "Never"	# Determines whether leading pipes are emitted on match arms
+match_block_trailing_comma = true	# Put a trailing comma after a block based match arm (non-block arms are not affected)
+merge_derives = true			# Merge multiple `			#[derive(...)]` into a single one
+newline_style = "Auto"			# Unix or Windows line endings
+normalize_doc_attributes = false	# Normalize doc attributes as doc comments
+overflow_delimited_expr = false		# Allow trailing bracket/brace delimited expressions to overflow
+print_misformatted_file_names = true	# Prints the names of mismatched files that were formatted. Prints the names of files that would be formatted when used with `--check` mode.
+remove_nested_parens = true		# Remove nested parens
+reorder_impl_items = true		# Reorder impl items
+reorder_imports = true			# Reorder import and extern crate statements alphabetically
+reorder_modules = true			# Reorder module statements alphabetically in group
+required_version = "1.8.0"
+skip_children = false			# Don't reformat out of line modules
+space_after_colon = true		# Leave a space after the colon
+space_before_colon = false		# Leave a space before the colon
+spaces_around_ranges = false		# Put spaces around the  .. and ..= range operators
+struct_field_align_threshold = 0	# Align struct fields if their diffs fits within threshold
+struct_lit_single_line = true		# Put small struct literals on a single line
+trailing_comma = "Vertical"		# How to handle trailing commas for lists
+trailing_semicolon = true		# Add trailing semicolon after break, continue and return
+type_punctuation_density = "Wide"	# Determines if '+' or '=' are wrapped in spaces in the punctuation of types
+unstable_features = false		# Enables unstable features. Only available on nightly channel
+use_field_init_shorthand = false	# Use field initialization shorthand if possible
+use_small_heuristics = "Max"		# Whether to use different formatting for items and expressions if they satisfy a heuristic notion of 'small'
+use_try_shorthand = true		# Replace uses of the try! macro by the ? shorthand
+where_single_line = false		# Force where-clauses to be on a single line
+wrap_comments = false			# Break comments to fit on the line

@@ -1,0 +1,279 @@
+diff --git a/crates/data-structures/src/cell.rs b/crates/data-structures/src/cell.rs
+index 838083c..51f902a 100644
+--- a/crates/data-structures/src/cell.rs
++++ b/crates/data-structures/src/cell.rs
+@@ -8,7 +8,9 @@ use std::ops::Deref;
+ use unique_pointer::{RefCounter, UniquePointer};
+ 
+ use crate::{AsSymbol, AsValue, Quotable, Symbol, Value};
+-pub trait ListIterator<'c, T: AsCell<'c>>: IntoIterator<Item = T> + Debug + Quotable {
++pub trait ListIterator<'c, T: AsCell<'c>>:
++    IntoIterator<Item = T> + Debug + Quotable
++{
+     fn iter_cells(&self) -> Cell<'c>;
+ }
+ 
+@@ -17,7 +19,7 @@ pub trait AsCell<'c>: Quotable {
+     fn as_cell(&self) -> Cell<'c>;
+ }
+ 
+-#[derive(Eq, PartialOrd, Ord)]
++#[derive(Eq, Debug, PartialOrd, Ord)]
+ pub struct Cell<'c> {
+     pub(crate) head: UniquePointer<Value<'c>>,
+     pub(crate) tail: UniquePointer<Cell<'c>>,
+@@ -469,46 +471,50 @@ impl<'c> Drop for Cell<'c> {
+     }
+ }
+ 
+-impl std::fmt::Debug for Cell<'_> {
+-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+-        write!(f, "{}", self.to_string())
+-    }
+-}
++// impl std::fmt::Debug for Cell<'_> {
++//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
++//         write!(f, "{}", self.to_string())
++//     }
++// }
++// impl std::fmt::Display for Cell<'_> {
++//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
++//         write!(
++//             f,
++//             "{}",
++//             if self.is_nil() {
++//                 "".to_string()
++//             } else {
++//                 let mut parts = Vec::<String>::new();
++//                 if self.head.is_not_null() {
++//                     parts.push(
++//                         self.head()
++//                             .map(|value| value.to_string())
++//                             .unwrap_or_default(),
++//                     )
++//                 }
++
++//                 if self.tail.is_not_null() {
++//                     if let Some(tail) = self.tail() {
++//                         parts.push(tail.to_string());
++//                     }
++//                 }
++//                 parts.join(" ").trim().to_string()
++//             }
++//         )
++//     }
++// }
+ impl std::fmt::Display for Cell<'_> {
+     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+-        write!(
+-            f,
+-            "{}",
+-            if self.is_nil() {
+-                "".to_string()
+-            } else {
+-                let mut parts = Vec::<String>::new();
+-                if self.head.is_not_null() {
+-                    parts.push(
+-                        self.head()
+-                            .map(|value| value.to_string())
+-                            .unwrap_or_default(),
+-                    )
+-                }
+-
+-                if self.tail.is_not_null() {
+-                    if let Some(tail) = self.tail() {
+-                        parts.push(tail.to_string());
+-                    }
+-                }
+-                parts.join(" ").trim().to_string()
+-            }
+-        )
++        write!(f, "{:#?}", self)
+     }
+ }
+-
+ impl<'c> AsValue<'c> for Cell<'c> {
+     fn as_value(&self) -> Value<'c> {
+         if self.tail.is_null() {
+             match self.head() {
+                 Some(head) => {
+                     let is_quoted = head.is_quoted();
+-                    let value  = head.unwrap_list();
++                    let value = head.unwrap_list();
+                     if is_quoted {
+                         value.quote()
+                     } else {
+diff --git a/crates/data-structures/src/symbol.rs b/crates/data-structures/src/symbol.rs
+index 15f730c..fa28845 100644
+--- a/crates/data-structures/src/symbol.rs
++++ b/crates/data-structures/src/symbol.rs
+@@ -13,7 +13,7 @@ pub trait AsSymbol<'c> {
+     }
+ }
+ 
+-#[derive(Clone, PartialOrd, Ord, Default, PartialEq, Eq, Hash)]
++#[derive(Clone, Debug, PartialOrd, Ord, Default, PartialEq, Eq, Hash)]
+ pub struct Symbol<'c> {
+     sym: &'c str,
+     quoted: bool,
+@@ -49,14 +49,14 @@ impl<'c> Symbol<'c> {
+ 
+ impl Display for Symbol<'_> {
+     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+-        write!(f, "{}", &self.sym)
+-    }
+-}
+-impl Debug for Symbol<'_> {
+-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+-        write!(f, "{}", &self.sym)
++        write!(f, "{:#?}", &self.sym)
+     }
+ }
++// impl Debug for Symbol<'_> {
++//     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
++//         write!(f, "{}", &self.sym)
++//     }
++// }
+ 
+ impl<'c> From<&'c str> for Symbol<'c> {
+     fn from(symbol: &'c str) -> Symbol<'c> {
+diff --git a/crates/data-structures/src/value.rs b/crates/data-structures/src/value.rs
+index 38dc40c..c1f9757 100644
+--- a/crates/data-structures/src/value.rs
++++ b/crates/data-structures/src/value.rs
+@@ -24,7 +24,7 @@ pub trait AsValue<'c>: Quotable {
+     fn as_value(&self) -> Value<'c>;
+ }
+ 
+-#[derive(Clone, PartialOrd, Ord, Default, PartialEq, Eq, Hash)]
++#[derive(Clone, Debug, PartialOrd, Ord, Default, PartialEq, Eq, Hash)]
+ pub enum Value<'c> {
+     #[default]
+     Nil,
+@@ -248,64 +248,70 @@ impl<'c> Drop for Value<'c> {
+ //         write!(f, "{:#?}", self)
+ //     }
+ // }
+-impl Display for Value<'_> {
+-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+-        write!(
+-            f,
+-            "{}",
+-            match self {
+-                Value::T => "t".to_string(),
+-                Value::Nil => "nil".to_string(),
+-                Value::Byte(h) => format!("0x{:02x}", h),
+-                Value::Float(h) => format!("{}", h),
+-                Value::Integer(h) => format!("{}", h),
+-                Value::String(h) => format!("{:#?}", h),
+-                Value::Symbol(h) => format!("{}", h),
+-                Value::QuotedSymbol(h) => format!("'{}", h),
+-                Value::UnsignedInteger(h) => format!("{}", h),
+-                Value::List(h) => {
+-                    if h.is_nil() {
+-                        format!("()")
+-                    } else {
+-                        format!("({})", h)
+-                    }
+-                },
+-                Value::QuotedList(h) => {
+-                    if h.is_nil() {
+-                        format!("'()")
+-                    } else {
+-                        format!("'({})", h)
+-                    }
+-                },
+-                Value::EmptyList => format!("()"),
+-                Value::EmptyQuotedList => format!("'()"),
+-            }
+-        )
+-    }
+-}
+-impl Debug for Value<'_> {
+-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+-        write!(
+-            f,
+-            "{}",
+-            match self {
+-                Value::T => "t".to_string(),
+-                Value::Nil => "nil".to_string(),
+-                Value::Byte(h) => format!("0x{:02x}", h),
+-                Value::Float(h) => format!("{:#?}", h),
+-                Value::Integer(h) => format!("{:#?}", h),
+-                Value::String(h) => format!("{:#?}", h),
+-                Value::Symbol(h) => format!("{}", h),
+-                Value::QuotedSymbol(h) => format!("'{:#?}", h),
+-                Value::UnsignedInteger(h) => format!("{:#?}", h),
+-                Value::List(h) => format!("({:#?})", h),
+-                Value::QuotedList(h) => format!("'({:#?})", h),
+-                Value::EmptyList => format!("()"),
+-                Value::EmptyQuotedList => format!("'()"),
+-            }
+-        )
++impl std::fmt::Display for Value<'_> {
++    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
++        write!(f, "{:#?}", self)
+     }
+ }
++
++// impl Display for Value<'_> {
++//     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
++//         write!(
++//             f,
++//             "{}",
++//             match self {
++//                 Value::T => "t".to_string(),
++//                 Value::Nil => "nil".to_string(),
++//                 Value::Byte(h) => format!("0x{:02x}", h),
++//                 Value::Float(h) => format!("{}", h),
++//                 Value::Integer(h) => format!("{}", h),
++//                 Value::String(h) => format!("{:#?}", h),
++//                 Value::Symbol(h) => format!("{}", h),
++//                 Value::QuotedSymbol(h) => format!("'{}", h),
++//                 Value::UnsignedInteger(h) => format!("{}", h),
++//                 Value::List(h) => {
++//                     if h.is_nil() {
++//                         format!("()")
++//                     } else {
++//                         format!("({})", h)
++//                     }
++//                 },
++//                 Value::QuotedList(h) => {
++//                     if h.is_nil() {
++//                         format!("'()")
++//                     } else {
++//                         format!("'({})", h)
++//                     }
++//                 },
++//                 Value::EmptyList => format!("()"),
++//                 Value::EmptyQuotedList => format!("'()"),
++//             }
++//         )
++//     }
++// }
++// impl Debug for Value<'_> {
++//     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
++//         write!(
++//             f,
++//             "{}",
++//             match self {
++//                 Value::T => "t".to_string(),
++//                 Value::Nil => "nil".to_string(),
++//                 Value::Byte(h) => format!("0x{:02x}", h),
++//                 Value::Float(h) => format!("{:#?}", h),
++//                 Value::Integer(h) => format!("{:#?}", h),
++//                 Value::String(h) => format!("{:#?}", h),
++//                 Value::Symbol(h) => format!("{}", h),
++//                 Value::QuotedSymbol(h) => format!("'{:#?}", h),
++//                 Value::UnsignedInteger(h) => format!("{:#?}", h),
++//                 Value::List(h) => format!("({:#?})", h),
++//                 Value::QuotedList(h) => format!("'({:#?})", h),
++//                 Value::EmptyList => format!("()"),
++//                 Value::EmptyQuotedList => format!("'()"),
++//             }
++//         )
++//     }
++// }
+ impl<'c> From<()> for Value<'c> {
+     fn from(_: ()) -> Value<'c> {
+         Value::Nil

@@ -1,0 +1,42 @@
+[package]
+name = "sexprs-macros-core"
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+documentation.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+autoexamples = false
+autobenches = false
+autotests = false
+
+[package.metadata]
+cargo-args = ["-Zmtime-on-use", "-Zavoid-dev-deps", "-Zcustom_mir"]
+
+[lib]
+test = false
+
+[dependencies]
+proc-macro2 = { workspace = true }
+prettyplease = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true }
+iocore = { workspace = true }
+syntect = { workspace = true }
+sexprs-formatter = { workspace = true}
+sexprs-util = { workspace = true}
+sexprs-data-structures = { workspace = true}
+
+[dev-dependencies]
+k9 = {workspace = true}
+iocore-test = {workspace = true}
+
+[[test]]
+name = "test_enum_builder"
+path = "tests/test_enum_builder.rs"

@@ -1,0 +1,79 @@
+diff --git a/crates/data-structures/src/cell.rs b/crates/data-structures/src/cell.rs
+index 838083c..820bf70 100644
+--- a/crates/data-structures/src/cell.rs
++++ b/crates/data-structures/src/cell.rs
+@@ -31,21 +31,29 @@ impl<'c> Cell<'c> {
+     }
+ 
+     pub fn quoted<T: AsValue<'c>>(item: Option<T>, quoted: bool) -> Cell<'c> {
++        let head = if let Some(item) = item {
++            let mut head = UniquePointer::<Value<'c>>::null();
++            head.write(item.as_value());
++            head
++        } else {
++            UniquePointer::<Value<'c>>::from(Value::nil())
++        };
+         let mut cell = Cell {
+-            head: UniquePointer::<Value<'c>>::null(),
++            head: head,
+             tail: UniquePointer::<Cell<'c>>::null(),
+             refs: RefCounter::new(),
+             quoted,
+         };
+         cell.incr_ref();
+-        if let Some(item) = item {
+-            cell.write(item.as_value());
+-        }
+         cell
+     }
+ 
+     pub fn is_nil(&self) -> bool {
+-        self.head.is_null() && self.tail.is_null()
++        if self.head.is_null(){
++            self.tail.is_null()
++        } else {
++            self.head.read().is_nil()
++        }
+     }
+ 
+     pub fn unwrap_value(&self) -> Value<'c> {
+@@ -146,8 +154,10 @@ impl<'c> Cell<'c> {
+     /// `O(n)`
+     pub fn len(&self) -> usize {
+         let mut len = 0;
+-        if !self.head.is_null() {
+-            len += 1
++        if let Some(head) = self.head() {
++            if !head.is_nil() {
++                len += 1
++            }
+         }
+         if let Some(tail) = self.tail() {
+             len += tail.len();
+@@ -581,6 +591,14 @@ impl<'c> FromIterator<Value<'c>> for Cell<'c> {
+         cell
+     }
+ }
++
++impl<'c> Deref for Cell<'c> {
++    type Target = Value<'c>;
++    fn deref(&self) -> &Value<'c> {
++        self.head.inner_ref()
++    }
++}
++
+ // impl<'c> Extend<Value<'c>> for Value<'c> {
+ //     fn extend<T: IntoIterator<Item = Value<'c>>>(&mut self, iter: T) {
+ //         if let Value::List(ref mut cell) = self {
+diff --git a/crates/data-structures/src/value.rs b/crates/data-structures/src/value.rs
+index 38dc40c..989771a 100644
+--- a/crates/data-structures/src/value.rs
++++ b/crates/data-structures/src/value.rs
+@@ -3,6 +3,7 @@ use std::borrow::Cow;
+ use std::convert::{AsMut, AsRef};
+ use std::fmt::{Debug, Display, Formatter};
+ use std::iter::{Extend, FromIterator, IntoIterator};
++use std::ops::{Deref, DerefMut};
+ 
+ use unique_pointer::UniquePointer;
+ 
