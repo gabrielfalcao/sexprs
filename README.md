@@ -3,8 +3,8 @@
 A minimal lisp dialect to evaluate written entirely in rust.
 
 ```
-cargo install sexprs
-sexprs
+$ cargo install sexprs-repl
+$ sexprs
 ```
 
 > Nomenclature comes from "s-exprs", that is: [**S-EXPR**essions](https://en.wikipedia.org/wiki/S-expression)
