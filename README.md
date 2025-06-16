@@ -1,4 +1,4 @@
-# (**S-EXPR**essions)[https://en.wikipedia.org/wiki/S-expression]
+# [**S-EXPR**essions](https://en.wikipedia.org/wiki/S-expression)
 
 minimal lisp dialect to evaluate written in Rust.
 
