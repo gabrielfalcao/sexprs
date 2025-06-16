@@ -1,18 +1,15 @@
-use std::collections::{BTreeMap, VecDeque};
 use std::fmt::Debug;
 
 use sexprs_data_structures::{
-    append, car, cdr, AsSymbol, AsValue, Cell, Quotable, Symbol, Value,
+    append, car, cdr, AsSymbol, Cell, Quotable, Symbol, Value,
 };
 use sexprs_parser::parse_source;
-use sexprs_util::{admonition, info, try_result, unexpected, warn, with_caller};
+use sexprs_util::try_result;
 use unique_pointer::UniquePointer;
 
-use crate::{
-    builtin, runtime_error, BuiltinFunction, Function, Result, Sym, SymbolTable,
-    VirtualMachine,
-};
+use crate::{Function, Result, Sym, SymbolTable, VirtualMachine};
 
+#[allow(unused)]
 #[derive(Clone)]
 pub struct Context<'c> {
     pub(crate) symbols: SymbolTable<'c>,
@@ -45,19 +42,19 @@ impl<'c> Context<'c> {
         name: Symbol<'c>,
         args: Value<'c>,
         body: Value<'c>,
-    ) -> Value<'c> {
+    ) -> Result<Value<'c>> {
         let function = Sym::<'c>::Function(Function::Defun {
             name: name.clone(),
             args: args.clone(),
             body: body.clone(),
         });
-        self.symbols.set_global(
+        try_result!(self.symbols.set_global(
             UniquePointer::read_only(self),
             &name,
             &function.clone(),
-        );
+        ));
 
-        function.as_value()
+        Ok(function.as_value())
     }
 
     pub fn symbol_is_function<T: AsSymbol<'c>>(&mut self, sym: T) -> Result<bool> {
@@ -69,8 +66,8 @@ impl<'c> Context<'c> {
             .symbols
             .get(UniquePointer::read_only(self), &symbol));
         match sym {
-            Sym::Value(item) => Ok(false),
-            Sym::Function(function) => Ok(true),
+            Sym::Value(_) => Ok(false),
+            Sym::Function(_) => Ok(true),
         }
     }
 
@@ -83,9 +80,7 @@ impl<'c> Context<'c> {
             .symbols
             .get(UniquePointer::read_only(self), &sym));
         let result = match symbol {
-            Sym::Value(item) => {
-                Ok(None)
-            },
+            Sym::Value(_) => Ok(None),
             Sym::Function(function) => Ok(Some(function)),
         };
         result
@@ -121,7 +116,7 @@ impl<'c> Context<'c> {
 
     pub fn eval(&mut self, list: Value<'c>) -> Result<Value<'c>> {
         if list.is_quoted() {
-            return Ok(list)
+            return Ok(list);
         }
         let head = car(&list);
         if try_result!(self.symbol_is_function(&head)) {
@@ -150,7 +145,6 @@ impl<'c> Context<'c> {
         sym: &Symbol<'c>,
         item: &Sym<'c>,
     ) -> Result<Value<'c>> {
-
         Ok(try_result!(self.symbols.set_global(
             UniquePointer::read_only(self),
             sym,

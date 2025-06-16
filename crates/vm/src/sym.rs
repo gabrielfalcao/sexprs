@@ -1,10 +1,8 @@
 use std::cmp::{Ordering, PartialEq, PartialOrd};
-use std::fmt::{Debug, Formatter, Display};
+use std::fmt::{Debug, Display, Formatter};
 use std::hash::{Hash, Hasher};
 
-use sexprs_data_structures::{
-    append, AsValue, Value,
-};
+use sexprs_data_structures::{append, Value};
 
 use crate::Function;
 
@@ -42,7 +40,7 @@ impl<'c> Sym<'c> {
     pub fn as_value(&self) -> Value<'c> {
         match self {
             Sym::Value(value) => value.clone(),
-            Sym::Function(Function::Builtin { name, function }) => Value::symbol(name),
+            Sym::Function(Function::Builtin { name, .. }) => Value::symbol(name),
             Sym::Function(Function::Defun { name, args, body }) => Value::list([
                 Value::from(name),
                 args.clone(),

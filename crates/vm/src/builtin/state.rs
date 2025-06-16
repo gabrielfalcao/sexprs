@@ -1,7 +1,7 @@
 //BinaryHeap;
 
-use sexprs_util::{info, warn, admonition};
-use sexprs_data_structures::{append, car, cdr, AsSymbol, Value};
+use sexprs_data_structures::{car, cdr, AsSymbol, Value};
+use sexprs_util::try_result;
 use unique_pointer::UniquePointer;
 
 use crate::helpers::runtime_error;
@@ -39,5 +39,5 @@ pub fn defun<'c>(
     let body = cdr(&cdr(&list));
     // info!(184, "defun");
     // dbg!(&name, &args, &body);
-    Ok(vm.register_function(name, args, body))
+    Ok(try_result!(vm.register_function(name, args, body)))
 }

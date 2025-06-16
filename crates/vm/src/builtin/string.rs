@@ -6,7 +6,7 @@ use unique_pointer::UniquePointer;
 use crate::{Result, Context};
 
 pub fn print<'c>(
-    vm: UniquePointer<Context<'c>>,
+    _vm_: UniquePointer<Context<'c>>,
     list: Value<'c>,
 ) -> Result<Value<'c>> {
     println!(

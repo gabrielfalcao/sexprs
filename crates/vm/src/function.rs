@@ -1,12 +1,10 @@
-use std::cmp::{Ordering, PartialEq, PartialOrd};
 use std::fmt::{Debug, Display, Formatter};
-use std::hash::{Hash, Hasher};
 use std::iter::Zip;
 
 use sexprs_data_structures::{
-    append, AsSymbol, AsValue, Symbol, Value, ValueIterator,
+    AsSymbol, Symbol, Value, ValueIterator,
 };
-use sexprs_util::{admonition, try_result, warn, with_caller, info};
+use sexprs_util::{try_result, with_caller};
 use unique_pointer::UniquePointer;
 
 use crate::{runtime_error, BuiltinFunction, Context, Result, Sym};
@@ -85,7 +83,7 @@ impl<'c> Function<'c> {
     ) -> Result<Value<'c>> {
         match self {
             Function::Defun { name, args, body } => {
-                let bound_args = try_result!(self.bind_args_to_local_context(
+                try_result!(self.bind_args_to_local_context(
                     vm.clone(),
                     name,
                     args,
@@ -93,13 +91,12 @@ impl<'c> Function<'c> {
                 ));
 
                 let mut value = Value::nil();
-                for (index, val) in body.into_iter().enumerate() {
-                    admonition!(184, "evaluating {}'s #{} body {}", name, index+1, &val);
+                for (_, val) in body.into_iter().enumerate() {
                     value = try_result!(vm.inner_mut().eval(val));
                 }
                 Ok(value)
             },
-            Function::Builtin { name, function } => {
+            Function::Builtin { function, .. } => {
                 //
                 Ok(try_result!(function(vm, list)))
             },

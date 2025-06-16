@@ -3,7 +3,7 @@
 use sexprs_data_structures::{
     append, car, cdr, AsFloat, AsInteger, AsUnsignedInteger, Cell, Value,
 };
-use sexprs_util::{admonition, info, try_result, unwrap_result, with_caller};
+use sexprs_util::{try_result, unwrap_result, with_caller};
 use unique_pointer::UniquePointer;
 
 use crate::{
@@ -108,7 +108,7 @@ macro_rules! impl_arithmetic_operation {
                     let args = append([list_car.clone(), list_cdr.clone()]);
                     Ok(try_result!($function_name(vm.clone(), args)))
                 },
-                Value::List(tmp) | Value::QuotedList(tmp) => {
+                Value::List(_) | Value::QuotedList(_) => {
                     let list_car = car(&list);
                     let list_cdr = cdr(&list);
                     let list_car = try_result!(vm.clone().inner_mut().eval(list_car));
@@ -123,9 +123,6 @@ macro_rules! impl_arithmetic_operation {
                     ),
                     None
                 ))),
-                _ => {
-                    unreachable!()
-                },
             }
         }
     };

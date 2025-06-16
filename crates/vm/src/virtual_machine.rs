@@ -1,13 +1,12 @@
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::VecDeque;
 use std::fmt::Debug;
 
-use sexprs_data_structures::{car, cdr, AsValue, Cell, Quotable, Symbol, Value};
-use sexprs_parser::parse_source;
-use sexprs_util::{admonition, info, try_result, unexpected, warn, with_caller};
+use sexprs_data_structures::{Symbol, Value};
+use sexprs_util::try_result;
 use unique_pointer::UniquePointer;
 
 use crate::{
-    builtin, runtime_error, BuiltinFunction, Context, Function, Result, Sym, SymTable,
+    Context, Result, Sym, SymTable,
     SymbolTable,
 };
 
@@ -41,7 +40,7 @@ impl<'c> VirtualMachine<'c> {
     }
 
     pub fn setq(&mut self, symbol: Symbol<'c>, value: Value<'c>) -> Result<Value<'c>> {
-        let mut context = self.push_context();
+        let context = self.push_context();
         let previous = try_result!(self.symbols.set_global(context, &symbol, &Sym::Value(value)));
         self.update_symbols();
         Ok(previous)

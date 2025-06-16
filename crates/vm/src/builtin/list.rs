@@ -1,6 +1,6 @@
 use sexprs_data_structures as ds;
-use sexprs_data_structures::{AsCell, Cell, Quotable, Value};
-use sexprs_util::{dbg, try_result, info, warn, admonition};
+use sexprs_data_structures::{AsCell, Quotable, Value};
+use sexprs_util::try_result;
 use unique_pointer::UniquePointer;
 
 use crate::helpers::runtime_error;
@@ -10,7 +10,7 @@ pub fn list<'c>(vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value
     Ok(ds::list(try_result!(vm.clone().eval(list))))
 }
 
-pub fn cons<'c>(vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
+pub fn cons<'c>(_vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
     let cell = ds::cons(ds::car(&list), &mut ds::cdr(&list).as_cell());
     Ok(if list.is_quoted() {
         Value::quoted_list(cell)
@@ -19,7 +19,7 @@ pub fn cons<'c>(vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value
     })
 }
 pub fn quote<'c>(
-    vm: UniquePointer<Context<'c>>,
+    _vm: UniquePointer<Context<'c>>,
     value: Value<'c>,
 ) -> Result<Value<'c>> {
     Ok(match &value {
@@ -35,21 +35,21 @@ pub fn quote<'c>(
     })
 }
 pub fn backquote<'c>(
-    vm: UniquePointer<Context<'c>>,
+    _vm: UniquePointer<Context<'c>>,
     list: Value<'c>,
 ) -> Result<Value<'c>> {
     Ok(list)
 }
 
-pub fn car<'c>(vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
+pub fn car<'c>(_vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
     Ok(ds::car(&ds::append(list)))
 }
 
-pub fn cdr<'c>(vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
+pub fn cdr<'c>(_vm: UniquePointer<Context<'c>>, list: Value<'c>) -> Result<Value<'c>> {
     Ok(ds::cdr(&ds::append(list)))
 }
 pub fn append<'c>(
-    vm: UniquePointer<Context<'c>>,
+    _vm: UniquePointer<Context<'c>>,
     list: Value<'c>,
 ) -> Result<Value<'c>> {
     Ok(ds::append(list))
