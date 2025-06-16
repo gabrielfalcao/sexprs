@@ -1,5 +1,5 @@
 [package]
-name = "sexprs"
+name = "sexprs-repl"
 authors.workspace = true
 categories.workspace = true
 description.workspace = true

@@ -1,7 +1,7 @@
 #![allow(unused)]
 use sexprs_formatter::highlight;
 use sexprs_parser::parse_source;
-use sexprs::{Result, VirtualMachinePrompt};
+use sexprs_repl::{Result, VirtualMachinePrompt};
 use sexprs_util::color;
 use sexprs_vm::VirtualMachine;
 use rustyline::error::ReadlineError;
