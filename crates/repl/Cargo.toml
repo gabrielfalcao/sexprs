@@ -10,7 +10,7 @@ keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
-version.workspace = true
+version = "0.0.2"
 
 autoexamples = false
 autobenches = false
@@ -21,7 +21,7 @@ cargo-args = ["-Zmtime-on-use", "-Zavoid-dev-deps", "-Zcustom_mir"]
 
 [dependencies]
 sexprs-util = {workspace = true}
-sexprs-vm = {workspace = true}
+sexprs-vm = {version = "0.0.2"}
 sexprs-parser = {workspace = true}
 sexprs-formatter = {workspace = true}
 sexprs-data-structures = {workspace = true}

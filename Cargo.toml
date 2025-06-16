@@ -50,5 +50,5 @@ sexprs-repl = { path = "crates/repl", version = "0.0.1" }
 sexprs-data-structures = { path = "crates/data-structures", version = "0.0.1" }
 sexprs-macros-core = { path = "crates/macros-core", version = "0.0.1" }
 sexprs-decorators = { path = "crates/decorators", version = "0.0.1" }
-sexprs-vm = { path = "crates/vm", version = "0.0.1" }
+sexprs-vm = { path = "crates/vm", version = "0.0.2" }
 k9 = "0.12.0"
