@@ -44,13 +44,13 @@ serde = { version = "1.0.219", features = ["derive"] }
 syn = { version = "2.0.101", features = ["full"] }
 syntect = "5.2.0"
 unique-pointer =  { version = "0.5.0" }
-sexprs = { path = "crates/lang" }
-sexprs-util = { path = "crates/util" }
-sexprs-formatter = { path = "crates/formatter" }
-sexprs-parser = { path = "crates/parser" }
-sexprs-repl = { path = "crates/repl" }
-sexprs-data-structures = { path = "crates/data-structures" }
-sexprs-macros-core = { path = "crates/macros-core" }
-sexprs-decorators = { path = "crates/decorators" }
-sexprs-vm = { path = "crates/vm" }
+sexprs = { path = "crates/lang", version = "0.0.1" }
+sexprs-util = { path = "crates/util", version = "0.0.1"}
+sexprs-formatter = { path = "crates/formatter", version = "0.0.1" }
+sexprs-parser = { path = "crates/parser", version = "0.0.1" }
+sexprs-repl = { path = "crates/repl", version = "0.0.1" }
+sexprs-data-structures = { path = "crates/data-structures", version = "0.0.1" }
+sexprs-macros-core = { path = "crates/macros-core", version = "0.0.1" }
+sexprs-decorators = { path = "crates/decorators", version = "0.0.1" }
+sexprs-vm = { path = "crates/vm", version = "0.0.1" }
 k9 = "0.12.0"
