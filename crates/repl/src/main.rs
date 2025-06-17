@@ -1,14 +1,14 @@
 #![allow(unused)]
-use sexprs_formatter::highlight;
-use sexprs_parser::parse_source;
-use sexprs_repl::{Result, VirtualMachinePrompt};
-use sexprs_util::color;
-use sexprs_vm::VirtualMachine;
 use rustyline::error::ReadlineError;
 use rustyline::history::FileHistory;
 use rustyline::{
     Changeset, CompletionType, Config, Context, DefaultEditor, Editor, Helper,
 };
+use sexprs_formatter::highlight;
+use sexprs_parser::parse_source;
+use sexprs_repl::{Result, VirtualMachinePrompt};
+use sexprs_util::color;
+use sexprs_vm::VirtualMachine;
 
 fn print_error<T: std::fmt::Display>(error: T) {
     eprintln!(
@@ -28,12 +28,16 @@ fn clear_screen() {
 }
 fn header() {
     clear_screen();
-    println!("sexprs VM version {}", env!("CARGO_PKG_VERSION"));
-}
-fn help() {
-    println!("\tHELP:");
-    println!("\ttype `@' to see the symbol table");
-    println!("\ttry arithmetic expressions such as `(* 4 (+ 3 2))'");
+    println!("\x1b[1;48;5;16m
+\x1b[1;38;5;83m  ____    \x1b[1;38;5;206m __   __  _  _____   _ __   ____
+\x1b[1;38;5;83m /',__\\  \x1b[1;38;5;206m/'__`\\/\\ \\/'\\/\\ '__`\\/\\`'__\\/',__\\
+\x1b[1;38;5;83m/\\__, `\\\x1b[1;38;5;206m/\\  __/\\/>  </\\ \\ \\L\\ \\ \\ \\//\\__, `\\
+\x1b[1;38;5;83m\\/\\____/\x1b[1;38;5;206m\\ \\____\\/\\_/\\_\\\\ \\ ,__/\\ \\_\\\\/\\____/
+\x1b[1;38;5;83m \\/___/  \x1b[1;38;5;206m\\/____/\\//\\/_/ \\ \\ \\/  \\/_/ \\/___/
+          \x1b[1;38;5;206m               \\ \\_\\
+          \x1b[1;38;5;206m                \\/_/
+\x1b[1;38;5;220m
+\x1b[1;38;5;83mS\x1b[1;38;5;231m-\x1b[1;38;5;206mexprs \x1b[1;38;5;231mVM\x1b[1;38;5;83m version {}\x1b[0m", env!("CARGO_PKG_VERSION"));
 }
 fn repl<'a>() -> Result<()> {
     let config = Config::builder()
@@ -49,42 +53,32 @@ fn repl<'a>() -> Result<()> {
 
     let mut vm = VirtualMachine::new();
     let vmp = VirtualMachinePrompt::new(&vm);
-    let history =
-        rustyline::history::FileHistory::with_config(config.clone());
-    let mut rl = Editor::<VirtualMachinePrompt, FileHistory>::with_history(
-        config, history,
-    )?;
+    let history = rustyline::history::FileHistory::with_config(config.clone());
+    let mut rl =
+        Editor::<VirtualMachinePrompt, FileHistory>::with_history(config, history)?;
     rl.set_helper(Some(vmp));
     header();
     if rl.load_history(".sexprs.history").is_err() {
-        println!("No previous history.");
+        println!("\x1b[1;38;5;237mno previous history.\x1b[0m");
     }
-    help();
     loop {
         let readline = rl.readline(": ");
         match readline {
             Ok(line) => {
                 let line: &'a str = line.clone().leak();
                 rl.add_history_entry(line)?;
-                match line.trim() {
-                    "@" => {
-                        println!("{:#?}", vm.symbols());
-                        continue;
-                    },
-                    _ => match parse_source(line) {
+                match parse_source(line) {
+                    Ok(value) => match vm.eval(value) {
                         Ok(value) => {
-                            println!(
-                                "{}",
-                                highlight(
-                                    vm.eval(value)?.to_string(),
-                                    "lisp"
-                                )?
-                            );
+                            println!("{}", highlight(value.to_string(), "lisp")?);
                         },
                         Err(error) => {
                             print_error(error);
-                            continue;
                         },
+                    },
+                    Err(error) => {
+                        print_error(error);
+                        continue;
                     },
                 }
             },
