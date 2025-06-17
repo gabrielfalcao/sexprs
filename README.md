@@ -1,31 +1,21 @@
 # sexprs
 
-A minimal lisp dialect to evaluate written entirely in rust.
-
-```
-$ cargo install sexprs-repl
-$ sexprs
-```
-
 > Nomenclature comes from "s-exprs", that is: [**S-EXPR**essions](https://en.wikipedia.org/wiki/S-expression)
 
+A minimal lisp dialect to evaluate written entirely in rust.
 
-## Try the REPL
+[![asciicast](https://asciinema.org/a/COX5doyxZOIoH9HsqCNKs9J57.svg)](https://asciinema.org/a/COX5doyxZOIoH9HsqCNKs9J57)
 
-```bash
-cargo run
-```
 
-or
+## Install
 
-```bash
-cd crates/repl
-cargo run
+```shell
+$ cargo install sexprs-repl
 ```
 
 
-## Run tests
+### Try the REPL
 
-```bash
-cargo test --all
+```shell
+$ sexprs
 ```
