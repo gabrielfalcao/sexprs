@@ -4,7 +4,7 @@
 
 A minimal lisp dialect to evaluate written entirely in rust.
 
-[![asciicast](https://asciinema.org/a/COX5doyxZOIoH9HsqCNKs9J57.svg)](https://asciinema.org/a/COX5doyxZOIoH9HsqCNKs9J57)
+[![asciicast](https://asciinema.org/a/yH0KFWsmTOSBSgmcQRSjEo18j.svg)](https://asciinema.org/a/yH0KFWsmTOSBSgmcQRSjEo18j)
 
 
 ## Install
