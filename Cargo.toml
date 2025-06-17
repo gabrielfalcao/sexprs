@@ -18,7 +18,6 @@ edition = "2021"
 
 description = """sexprs is a minimal lisp dialect to evaluate written in Rust."""
 
-documentation = "https://docs.rs/sexprs"
 readme = "README.md"
 repository = "https://github.com/gabrielfalcao/sexprs"
 homepage = "https://github.com/gabrielfalcao/sexprs"
