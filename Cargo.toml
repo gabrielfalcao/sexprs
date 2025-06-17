@@ -13,7 +13,7 @@ members = [
 default-members = ["crates/repl"]
 
 [workspace.package]
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 
 description = """sexprs is a minimal lisp dialect to evaluate written in Rust."""
