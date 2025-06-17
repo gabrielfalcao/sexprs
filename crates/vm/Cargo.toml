@@ -19,9 +19,7 @@ autotests = false
 [dependencies]
 sexprs-util = { workspace = true }
 sexprs-parser = { workspace = true }
-sexprs-formatter = { workspace = true }
 sexprs-data-structures = { workspace = true }
-sexprs-decorators = { workspace = true }
 unique-pointer =  { workspace = true    }
 iocore = { workspace = true }
 
