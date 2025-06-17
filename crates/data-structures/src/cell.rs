@@ -1,6 +1,6 @@
 #![allow(unused)]
 use std::borrow::Cow;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 use std::hash::{Hash, Hasher};
 use std::iter::{Extend, IntoIterator, Iterator};
 use std::ops::Deref;
@@ -463,39 +463,45 @@ impl<'c> Drop for Cell<'c> {
     }
 }
 
-impl std::fmt::Debug for Cell<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        if self.is_nil() {
-            return write!(f, "nil");
-        }
-        write!(
-            f,
-            "Cell[{}]",
-            if self.is_nil() {
-                "".to_string()
-            } else {
-                let mut parts = Vec::<String>::new();
-                if self.head.is_not_null() {
-                    parts.push(
-                        self.head()
-                            .map(|value| format!("{:#?}", value))
-                            .unwrap_or_default(),
-                    )
-                }
+// impl std::fmt::Debug for Cell<'_> {
+//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+//         if self.is_nil() {
+//             return write!(f, "nil");
+//         }
+//         write!(
+//             f,
+//             "Cell[{}]",
+//             if self.is_nil() {
+//                 "".to_string()
+//             } else {
+//                 let mut parts = Vec::<String>::new();
+//                 if self.head.is_not_null() {
+//                     parts.push(
+//                         self.head()
+//                             .map(|value| format!("{:#?}", value))
+//                             .unwrap_or_default(),
+//                     )
+//                 }
+//
+//                 if self.tail.is_not_null() {
+//                     if let Some(tail) = self.tail() {
+//                         parts.push(format!("{:#?}", tail));
+//                     }
+//                 }
+//                 parts.join(" . ").trim().to_string()
+//             }
+//         )
+//     }
+// }
 
-                if self.tail.is_not_null() {
-                    if let Some(tail) = self.tail() {
-                        parts.push(format!("{:#?}", tail));
-                    }
-                }
-                parts.join(" . ").trim().to_string()
-            }
-        )
+impl Debug for Cell<'_> {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}", self)
     }
 }
 
 impl std::fmt::Display for Cell<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         write!(
             f,
             "{}",

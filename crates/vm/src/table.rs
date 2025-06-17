@@ -23,8 +23,7 @@ impl<'c> Debug for SymbolTable<'c> {
         globals: {:#?},
         locals: {:#?}
     }}",
-            &self.globals,
-            &self.locals,
+            &self.globals, &self.locals,
         )
     }
 }
@@ -37,9 +36,7 @@ impl<'c> Display for SymbolTable<'c> {
         function_locals: {:#?},
         locals: {:#?}
     }}",
-            &self.globals,
-            &self.function_locals,
-            &self.locals,
+            &self.globals, &self.function_locals, &self.locals,
         )
     }
 }
@@ -64,6 +61,11 @@ impl<'c> SymbolTable<'c> {
         register_builtin_function(&mut globals, "quote", builtin::list::quote);
         register_builtin_function(&mut globals, "print", builtin::string::print);
         register_builtin_function(&mut globals, "backquote", builtin::list::backquote);
+
+        register_builtin_function(&mut globals, "if", builtin::r#if::r#if);
+
+        register_builtin_function(&mut globals, "listp", builtin::r#type::listp);
+        register_builtin_function(&mut globals, "null", builtin::r#type::null);
 
         register_builtin_function(&mut globals, "*", builtin::math::arithmetic::mul);
         register_builtin_function(&mut globals, "+", builtin::math::arithmetic::add);
@@ -158,15 +160,9 @@ fn set_within_map<'c>(
     let previous = map.insert(sym.clone(), item.clone());
 
     Ok(match previous.unwrap_or_else(|| item.clone()) {
-        Sym::Value(_) => {
-            item.clone()
-        },
-        Sym::Function(Function::Defun { .. }) => {
-            item.clone()
-        },
-        Sym::Function(Function::Builtin { .. }) => {
-            item.clone()
-        },
+        Sym::Value(_) => item.clone(),
+        Sym::Function(Function::Defun { .. }) => item.clone(),
+        Sym::Function(Function::Builtin { .. }) => item.clone(),
     }
     .as_value())
 }

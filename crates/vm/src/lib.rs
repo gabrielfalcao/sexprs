@@ -1,3 +1,4 @@
+#![allow(unused)]
 pub use errors::{Error, ErrorType, Result};
 pub mod builtin;
 pub mod errors;

@@ -4,7 +4,7 @@ use sexprs_data_structures::{
     append, car, cdr, AsSymbol, Cell, Quotable, Symbol, Value,
 };
 use sexprs_parser::parse_source;
-use sexprs_util::try_result;
+use sexprs_util::{admonition, try_result};
 use unique_pointer::UniquePointer;
 
 use crate::{Function, Result, Sym, SymbolTable, VirtualMachine};
@@ -37,6 +37,10 @@ impl<'c> Context<'c> {
         context
     }
 
+    pub fn vm(&self) -> UniquePointer<Context<'c>> {
+        UniquePointer::read_only(self)
+    }
+
     pub fn register_function(
         &mut self,
         name: Symbol<'c>,
@@ -48,11 +52,9 @@ impl<'c> Context<'c> {
             args: args.clone(),
             body: body.clone(),
         });
-        try_result!(self.symbols.set_global(
-            UniquePointer::read_only(self),
-            &name,
-            &function.clone(),
-        ));
+        try_result!(self
+            .symbols
+            .set_global(self.vm(), &name, &function.clone(),));
 
         Ok(function.as_value())
     }
@@ -115,15 +117,16 @@ impl<'c> Context<'c> {
     }
 
     pub fn eval(&mut self, list: Value<'c>) -> Result<Value<'c>> {
-        if list.is_quoted() {
+        if list.is_quoted() || list.is_nil() {
             return Ok(list);
         }
         let head = car(&list);
-        if try_result!(self.symbol_is_function(&head)) {
-            Ok(try_result!(self.eval_symbol_function(head, cdr(&list))))
+        let value = if try_result!(self.symbol_is_function(&head)) {
+            try_result!(self.eval_symbol_function(head, cdr(&list)))
         } else {
-            Ok(try_result!(self.eval_list(list)))
-        }
+            try_result!(self.eval_list(list.clone()))
+        };
+        Ok(value)
     }
 
     pub fn eval_list(&mut self, list: Value<'c>) -> Result<Value<'c>> {

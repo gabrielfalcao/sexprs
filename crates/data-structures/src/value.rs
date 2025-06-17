@@ -24,7 +24,7 @@ pub trait AsValue<'c>: Quotable {
     fn as_value(&self) -> Value<'c>;
 }
 
-#[derive(Clone, Debug, Ord, Default, Eq, Hash, PartialOrd, PartialEq)]
+#[derive(Clone, Ord, Default, Eq, Hash, PartialOrd, PartialEq)]
 pub enum Value<'c> {
     #[default]
     Nil,
@@ -244,11 +244,11 @@ impl<'c> Drop for Value<'c> {
     fn drop(&mut self) {}
 }
 
-// impl Display for Value<'_> {
-//     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-//         write!(f, "{:#?}", self)
-//     }
-// }
+impl Debug for Value<'_> {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}", self)
+    }
+}
 impl Display for Value<'_> {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         write!(
@@ -287,6 +287,16 @@ impl Display for Value<'_> {
 impl<'c> From<()> for Value<'c> {
     fn from(_: ()) -> Value<'c> {
         Value::Nil
+    }
+}
+impl<'c> Into<bool> for &Value<'c> {
+    fn into(self) -> bool {
+        !self.is_empty()
+    }
+}
+impl<'c> Into<bool> for Value<'c> {
+    fn into(self) -> bool {
+        !self.is_empty()
     }
 }
 impl<'c> From<bool> for Value<'c> {

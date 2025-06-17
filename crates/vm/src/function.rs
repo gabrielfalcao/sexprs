@@ -4,7 +4,7 @@ use std::iter::Zip;
 use sexprs_data_structures::{
     AsSymbol, Symbol, Value, ValueIterator,
 };
-use sexprs_util::{try_result, with_caller};
+use sexprs_util::{try_result, with_caller, admonition, warn};
 use unique_pointer::UniquePointer;
 
 use crate::{runtime_error, BuiltinFunction, Context, Result, Sym};
@@ -83,6 +83,8 @@ impl<'c> Function<'c> {
     ) -> Result<Value<'c>> {
         match self {
             Function::Defun { name, args, body } => {
+                // warn!(82, "calling {}", name);
+                // dbg!(&list);
                 try_result!(self.bind_args_to_local_context(
                     vm.clone(),
                     name,
@@ -96,8 +98,10 @@ impl<'c> Function<'c> {
                 }
                 Ok(value)
             },
-            Function::Builtin { function, .. } => {
-                //
+            Function::Builtin { name, function, .. } => {
+                // warn!(74, "calling {}", name);
+                // dbg!(&list);
+
                 Ok(try_result!(function(vm, list)))
             },
         }

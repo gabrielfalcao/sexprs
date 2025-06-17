@@ -3,13 +3,13 @@ macro_rules! location {
     () => {{
         let location = format!(
             "{}{}{}:{}",
-            sexprs_util::color::fg($crate::function_name!(), 28),
-            sexprs_util::color::fg(" file ", 220),
-            sexprs_util::color::fg(
+            sexprs_util::color::fore($crate::function_name!(), 28),
+            sexprs_util::color::fore(" file ", 220),
+            sexprs_util::color::fore(
                 $crate::filename!(),
                 sexprs_util::color::from_string($crate::filename!()) as usize
             ),
-            sexprs_util::color::fg(line!().to_string(), 49)
+            sexprs_util::color::fore(line!().to_string(), 49)
         );
         location
     }};
@@ -107,8 +107,8 @@ macro_rules! dbg {
     ($( $arg:expr ),* ) => {{
         let obj = format!("{}", [$(
             format!("{}", $crate::indent_objdump!($arg)),
-        )*].iter().map(sexprs_util::color::reset).collect::<Vec<String>>().join(""));
-        eprintln!("{}", sexprs_util::color::reset([$crate::location!(begin), obj, $crate::location!(end)].join("")));
+        )*].iter().map(sexprs_util::color::reset).collect::<Vec<String>>().join("\n"));
+        eprintln!("{}", sexprs_util::color::reset([$crate::location!(begin), obj, $crate::location!(end)].join("\n")));
     }};
 }
 #[macro_export]
