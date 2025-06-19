@@ -1,6 +1,9 @@
 #![allow(unused)]
 use k9::assert_equal;
-use sexprs_data_structures::{append, car, cdr, cons, list, Cell, Value, assert_display_equal, assert_debug_equal};
+use sexprs_data_structures::{
+    append, assert_debug_equal, assert_display_equal, car, cdr, cons, list, setcar,
+    setcdr, AsValue, Cell, Value,
+};
 
 #[test]
 fn test_cons() {
@@ -22,10 +25,7 @@ fn test_list() {
         Value::from(33u8),
         Value::from("tail"),
     ]);
-    assert_display_equal!(
-        value,
-        r#"(head middle 0x21 "tail")"#
-    );
+    assert_display_equal!(value, r#"(head middle 0x21 "tail")"#);
 }
 
 #[test]
@@ -38,10 +38,7 @@ fn test_car() {
     ]);
     assert_equal!(value.head(), Some(Value::from("head")));
     assert_equal!(car(&value), Value::from("head"));
-    let value = list([
-        Value::symbol("head"),
-        Value::from("tail"),
-    ]).quote();
+    let value = list([Value::symbol("head"), Value::from("tail")]).quote();
     assert_equal!(value.head(), Some(Value::symbol("head")));
     assert_eq!(car(&value), Value::quoted_symbol("head"));
 }
@@ -79,4 +76,15 @@ fn test_append() {
             Value::symbol("list2-tail"),
         ]
     );
+}
+
+#[test]
+fn test_setcdr() {
+    let mut cell = cons(Value::from(1), &mut Cell::from(Value::from(2)));
+    // create ring
+    setcdr(cell.tail.inner_mut(), &cell);
+
+    assert_equal!(car(&cell.as_value()), Value::from(1));
+    assert_equal!(car(&cdr(&cell.as_value())), Value::from(2));
+    assert_equal!(car(&cdr(&cdr(&cell.as_value()))), Value::from(1));
 }

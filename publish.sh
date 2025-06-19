@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cargo publish -p sexprs-util
 cargo publish -p sexprs-formatter
 cargo publish -p sexprs-data-structures

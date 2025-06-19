@@ -4,7 +4,6 @@ pub use errors::{Caller, Error, Result};
 pub mod macros;
 pub mod test;
 
-pub mod source;
 use std::str::FromStr;
 
 use sexprs_data_structures::{Cell, Value};
@@ -12,6 +11,7 @@ use sexprs_util::unexpected;
 use pest::iterators::{Pair, Pairs};
 use pest::Parser;
 use pest_derive::Parser;
+pub mod source;
 pub use source::{Source, Span, SpanPosition};
 pub const GRAMMAR: &'static str = include_str!("./grammar.pest");
 

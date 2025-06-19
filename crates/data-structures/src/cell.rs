@@ -19,10 +19,10 @@ pub trait AsCell<'c>: Quotable {
 
 #[derive(Eq, PartialOrd, Ord)]
 pub struct Cell<'c> {
-    pub(crate) head: UniquePointer<Value<'c>>,
-    pub(crate) tail: UniquePointer<Cell<'c>>,
-    pub(crate) refs: RefCounter,
-    pub(crate) quoted: bool,
+    pub head: UniquePointer<Value<'c>>,
+    pub tail: UniquePointer<Cell<'c>>,
+    pub refs: RefCounter,
+    pub quoted: bool,
 }
 
 impl<'c> Cell<'c> {
@@ -65,9 +65,6 @@ impl<'c> Cell<'c> {
         let value = item.as_value();
         let is_quoted = value.is_quoted();
         Cell::quoted(Some(value), is_quoted)
-        // let mut cell = Cell::nil();
-        // cell.write(item.as_value());
-        // cell
     }
 
     pub fn head(&self) -> Option<Value<'c>> {
@@ -89,33 +86,22 @@ impl<'c> Cell<'c> {
         self.incr_ref();
 
         if self.head.is_null() {
-            // when self.head *IS* null:
-            // and `new.head` *IS NOT* null
             if !new.head.is_null() {
-                // swap heads
                 self.swap_head(&mut new);
             }
 
-            // and new.tail *IS NOT* null
             if new.tail.is_not_null() {
                 let tail = new.tail.inner_mut();
-                // if new.tail.head *IS NOT* null
                 if new.head.is_not_null() {
-                    // write new.tail.head in tail.head
                     tail.head.write_ref(new.head.inner_ref());
 
-                    // TODO:
-                    // try new.swap_head(tail);
                 }
             }
             self.tail = UniquePointer::from(new);
         } else {
-            // when self.head *IS NOT* null
             if self.tail.is_null() {
-                // when self.tail *IS* null
                 self.tail = UniquePointer::from(new);
             } else {
-                //  self.tail *IS NOT* null
                 self.tail.inner_mut().add(&new);
             }
         }
@@ -155,14 +141,16 @@ impl<'c> Cell<'c> {
         self.tail.as_ref()
     }
 
+    pub fn tail_mut(&mut self) -> Option<&'c mut Cell<'c>> {
+        self.tail.as_mut()
+    }
+
     pub fn values(&self) -> Vec<Value<'c>> {
         let mut values = Vec::<Value>::new();
         if let Some(head) = self.head() {
-            // dbg!(&head);
             values.push(head.clone());
         }
         if let Some(tail) = self.tail() {
-            // dbg!(&tail);
             values.extend(tail.values());
         }
         values
@@ -174,8 +162,6 @@ impl<'c> Cell<'c> {
     }
 
     pub(crate) fn swap_head(&mut self, other: &mut Self) {
-        // self.incr_ref();
-        // other.incr_ref();
         self.head = unsafe {
             let head = other.head.propagate();
             other.head = self.head.propagate();
@@ -205,20 +191,10 @@ impl<'c> Cell<'c> {
 
     fn incr_ref(&mut self) {
         self.refs.incr();
-        if !self.tail.is_null() {
-            if let Some(tail) = self.tail.as_mut() {
-                tail.incr_ref();
-            }
-        }
     }
 
     fn decr_ref(&mut self) {
         self.refs.decr();
-        if !self.tail.is_null() {
-            if let Some(tail) = self.tail.as_mut() {
-                tail.decr_ref();
-            }
-        }
     }
 
     fn dealloc(&mut self) {
@@ -280,15 +256,6 @@ impl<'c, T: Quotable + AsCell<'c>, const N: usize> AsCell<'c> for [T; N] {
     }
 }
 
-// impl<'c> AsList<'c> for Cell<'c> {
-//     fn as_cell(&self) -> List<'c> {
-//         if self.is_nil() {
-//             List::Empty(self.is_quoted())
-//         } else {
-//             List::Linked(self.clone(), self.is_quoted())
-//         }
-//     }
-// }
 
 impl<'c, T: AsCell<'c>, const N: usize> ListIterator<'c, T> for [T; N] {
     fn iter_cells(&self) -> Cell<'c> {
@@ -440,11 +407,11 @@ impl<'c> Clone for Cell<'c> {
         let mut cell = Cell::nil();
         cell.refs = self.refs.clone();
         cell.incr_ref();
-        if let Some(head) = self.head() {
-            cell.head.write(head)
+        if self.head.is_not_null() {
+            cell.head = UniquePointer::from_ref(self.head.inner_ref())
         }
-        if let Some(tail) = self.tail().map(Clone::clone) {
-            cell.tail.write(tail)
+        if self.tail.is_not_null() {
+            cell.tail = UniquePointer::from_ref(self.tail.inner_ref())
         }
         cell
     }
@@ -463,36 +430,7 @@ impl<'c> Drop for Cell<'c> {
     }
 }
 
-// impl std::fmt::Debug for Cell<'_> {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         if self.is_nil() {
-//             return write!(f, "nil");
-//         }
-//         write!(
-//             f,
-//             "Cell[{}]",
-//             if self.is_nil() {
-//                 "".to_string()
-//             } else {
-//                 let mut parts = Vec::<String>::new();
-//                 if self.head.is_not_null() {
-//                     parts.push(
-//                         self.head()
-//                             .map(|value| format!("{:#?}", value))
-//                             .unwrap_or_default(),
-//                     )
-//                 }
 //
-//                 if self.tail.is_not_null() {
-//                     if let Some(tail) = self.tail() {
-//                         parts.push(format!("{:#?}", tail));
-//                     }
-//                 }
-//                 parts.join(" . ").trim().to_string()
-//             }
-//         )
-//     }
-// }
 
 impl Debug for Cell<'_> {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
@@ -607,40 +545,3 @@ impl<'c> FromIterator<Value<'c>> for Cell<'c> {
         cell
     }
 }
-// impl<'c> Extend<Value<'c>> for Value<'c> {
-//     fn extend<T: IntoIterator<Item = Value<'c>>>(&mut self, iter: T) {
-//         if let Value::List(ref mut cell) = self {
-//             for value in iter {
-//                 cell.push_value(value);
-//             }
-//         } else if let Value::QuotedList(ref mut cell) = self {
-//             for value in iter {
-//                 cell.push_value(value);
-//             }
-//         } else {
-//             match self.clone() {
-//                 Value::EmptyList => {
-//                     let mut cell = Cell::nil();
-//                     for value in iter {
-//                         cell.push_value(value)
-//                     }
-//                     *self = Value::List(cell)
-//                 },
-//                 Value::EmptyQuotedList => {
-//                     let mut cell = Cell::nil();
-//                     for value in iter {
-//                         cell.push_value(value)
-//                     }
-//                     *self = Value::QuotedList(cell)
-//                 },
-//                 value => {
-//                     let mut cell = Cell::nil();
-//                     for value in iter {
-//                         cell.push_value(value)
-//                     }
-//                     *self = Value::List(cell)
-//                 },
-//             }
-//         }
-//     }
-// }
