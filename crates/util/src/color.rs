@@ -26,6 +26,10 @@ pub fn back<T: Display>(text: T, back: usize) -> String {
     let (back, fore) = couple(back);
     ansi(text, fore as usize, back as usize)
 }
+pub fn auto<T: Display>(word: T) -> String {
+    let color = from_string(word.to_string());
+    fg(word.to_string(), color.into())
+}
 pub fn from_string<T: Display>(word: T) -> u8 {
     from_bytes(word.to_string().as_bytes())
 }
@@ -33,7 +37,6 @@ pub fn rgb_from_string<T: Display>(word: T) -> [u8; 3] {
     rgb_from_bytes(word.to_string().as_bytes())
 }
 pub fn from_bytes(bytes: &[u8]) -> u8 {
-    eprintln!("");
     let mut color: u8 = 0;
     for rgb in rgb_from_bytes(bytes) {
         color = color ^ rgb

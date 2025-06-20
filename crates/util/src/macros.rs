@@ -3,36 +3,37 @@ macro_rules! location {
     () => {{
         let location = format!(
             "{}{}{}:{}",
-            sexprs_util::color::fore($crate::function_name!(), 28),
-            sexprs_util::color::fore(" file ", 220),
-            sexprs_util::color::fore(
-                $crate::filename!(),
-                sexprs_util::color::from_string($crate::filename!()) as usize
-            ),
-            sexprs_util::color::fore(line!().to_string(), 49)
+            sexprs_util::color::auto($crate::function_name!()),
+            sexprs_util::color::fg(" @ ", 220),
+            sexprs_util::color::auto($crate::filename!()),
+            sexprs_util::color::auto(line!().to_string())
         );
         location
     }};
     (begin) => {
-        $crate::tag!(sexprs_util::color::fg(
-            format!("in function {}", $crate::location!()),
-            178
+        $crate::tag!(sexprs_util::color::auto(
+            [
+                format!("in function"),
+                $crate::location!()
+            ]
+            .join(" ")
         ))
     };
     (end) => {
         $crate::tag!(
-            close,
-            sexprs_util::color::fg(
-                format!("from function {}", $crate::location!()),
-                178
-            )
+            [
+                sexprs_util::color::auto(format!("from function")),
+                $crate::location!()
+            ]
+            .join(" ")
         )
     };
     (unexpected) => {
-        sexprs_util::color::fg(
-            format!("<unexpected branch in function {}>", $crate::location!()),
-            160,
-        )
+        [
+            sexprs_util::color::fg(format!("<unexpected branch in function"), 160),
+            $crate::location!(),
+            sexprs_util::color::fg(format!(">"), 160),
+        ].join(" ")
     };
 }
 #[macro_export]
@@ -43,36 +44,24 @@ macro_rules! filename {
             .map(String::from)
             .collect::<Vec<String>>();
         let (folder, filename) = if parts.len() > 1 {
-            let last = parts.remove(parts.len() - 1);
-            let folder_color =
-                sexprs_util::color::from_string(parts[0].to_string()) as usize;
-            let last = sexprs_util::color::fg(
-                last.to_string(),
-                sexprs_util::color::from_string(last.to_string()) as usize,
-            );
+            let last = sexprs_util::color::auto(parts.remove(parts.len() - 1));
             let mut parts = parts
                 .iter()
-                .map(|part| sexprs_util::color::fg(part, folder_color))
+                .map(|part| sexprs_util::color::auto(part))
                 .collect::<Vec<String>>();
             (parts, last)
         } else {
-            let file_color =
-                sexprs_util::color::from_string(parts[0].to_string()) as usize;
-
-            (
-                Vec::<String>::new(),
-                sexprs_util::color::fg(parts[0].to_string(), file_color),
-            )
+            (Vec::<String>::new(), sexprs_util::color::auto(parts[0].to_string()))
         };
         if folder.len() > 1 {
             format!(
                 "{}{}{}",
-                filename,
+                sexprs_util::color::auto(filename),
                 sexprs_util::color::fg(" in ", 7),
                 folder.join(std::path::MAIN_SEPARATOR_STR)
             )
         } else {
-            filename
+            sexprs_util::color::auto(filename)
         }
     }};
 }
@@ -88,7 +77,7 @@ macro_rules! tag {
         format!(
             "{}{}{}",
             sexprs_util::color::fg("<", $color),
-            $arg,
+            sexprs_util::color::auto($arg),
             sexprs_util::color::fg(">", $color),
         )
     }};
@@ -103,7 +92,6 @@ macro_rules! tag {
 }
 #[macro_export]
 macro_rules! dbg {
-    () => {eprintln!("");};
     ($( $arg:expr ),* ) => {{
         let obj = format!("{}", [$(
             format!("{}", $crate::indent_objdump!($arg)),
@@ -325,7 +313,6 @@ macro_rules! vec_deque {
         deque
     }};
 }
-
 
 #[macro_export]
 macro_rules! step {
